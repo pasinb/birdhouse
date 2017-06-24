@@ -20,6 +20,7 @@ def create_failed_addr(err, address, floor):
 
 @shared_task
 def send_request_to_all_address():
+    #TODO parallel for multiple addr
     address_list = Address.objects.all()
     for address in address_list:
         for floor in range(1, address.floor + 1):
