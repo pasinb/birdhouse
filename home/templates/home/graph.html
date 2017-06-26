@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Graph</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.0.0/dygraph.min.js"></script>
+    <link rel="stylesheet" src="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.0.0/dygraph.min.css" />
+    <script src="http://dygraphs.com/src/extras/synchronizer.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <style>
+        .graph {
+            height: 25vh;
+            margin-bottom: 2rem;
+        }
+        .dygraph-title {
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+<body>
+    <div style="padding-left: 5rem, padding-right: 5rem">
+        <div id="tempChart" class="graph"></div>
+        <div id="humiChart" class="graph"></div>
+        <div id="relayChart" class="graph"></div>
+    </div>
+    <script type="text/javascript">
+        temp = new Dygraph(
+            document.getElementById("tempChart"),
+            [
+                {% for d in data %}[new Date("{{ d.datetime.isoformat }}"),{{ d.temp }}],
+                {% endfor %}
+            ],
+            {
+                title: 'Temp',
+                showRangeSelector: true,
+                axes: {
+                    x: {
+                        valueFormatter: function(ms) {
+                            return moment(ms).format('DD/MM/YY HH:mm:ss')
+                        }
+                    }
+                },
+                labels: [ "Datetime", "Temp" ],
+            }
+        );
+        humi = new Dygraph(
+            document.getElementById("humiChart"),
+            [
+                {% for d in data %}[new Date("{{ d.datetime.isoformat }}"),{{ d.humidity }}],
+                {% endfor %}
+            ],
+            {
+                title: 'Humidity',
+                showRangeSelector: true,
+                axes: {
+                    x: {
+                        valueFormatter: function(ms) {
+                            return moment(ms).format('DD/MM/YY HH:mm:ss')
+                        }
+                    }
+                },
+                labels: [ "Datetime", "Humi" ]
+            }
+        );
+        relay = new Dygraph(
+            document.getElementById("relayChart"),
+            [
+                {% for d in data %}[new Date("{{ d.datetime.isoformat }}"),
+                {% if d.relay.0 == "1" %} 6 {% else %} NaN {% endif %},
+                {% if d.relay.1 == "1" %} 5 {% else %} NaN {% endif %},
+                {% if d.relay.2 == "1" %} 4 {% else %} NaN {% endif %},
+                {% if d.relay.3 == "1" %} 3 {% else %} NaN {% endif %},
+                {% if d.relay.4 == "1" %} 2 {% else %} NaN {% endif %},
+                {% if d.relay.5 == "1" %} 1 {% else %} NaN {% endif %},
+                ],
+                {% endfor %}
+            ],
+            {
+                strokeWidth: 6.0,
+                title: 'Relay status',
+                valueRange: [0.5,6.5],
+                interactionModel: {},
+                axes: {
+                    y: {
+                        axisLabelFormatter: function(d) {
+                            switch(d) {
+                                case 6: return 'Relay 1'
+                                case 5: return 'Relay 2'
+                                case 4: return 'Relay 3'
+                                case 3: return 'Relay 4'
+                                case 2: return 'Relay 5'
+                                case 1: return 'Relay 6'
+                                default:
+                                    return ''
+                            }
+                        },
+                        valueFormatter: function(y, opts, series_name) {
+                            //TODO show OFF for null
+                            if(y != null) return 'ON'
+                                return 'OFF'
+                        },
+
+                        valueFormatter_bak: function(y) {
+                            if(y != null) return 'ON'
+                            return 'OFF'
+                        },
+                    },
+                    x: {
+                        valueFormatter: function(ms) {
+                            return moment(ms).format('DD/MM/YY HH:mm:ss')
+                        }
+                    }
+                },
+                labels: [ "Datetime", "Relay 1", "Relay 2" , "Relay 3" , "Relay 4" , "Relay 5" , "Relay 6"  ]
+            }
+        );
+        var gs = [];
+        gs.push(temp);
+        gs.push(humi);
+        gs.push(relay);
+        sync = Dygraph.synchronize(gs, {
+            zoom: true,
+            range: false,
+            selection: true
+        });
+    </script>
+</body>
+</html>
