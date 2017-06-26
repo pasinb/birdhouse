@@ -29,7 +29,7 @@ SECRET_KEY = constants['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['128.199.227.220',]
 
 
 # Application definition
