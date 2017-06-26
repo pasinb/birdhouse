@@ -17,13 +17,14 @@ def prepend_zero(num):
 def create_failed_addr(err, address, floor):
     Data.objects.create(err=err, success=False, address=address, floor=floor)
 
+#TODO erase old data task
 
 @shared_task
 def send_request_to_all_address():
     #TODO parallel for multiple addr
     address_list = Address.objects.all()
     for address in address_list:
-        for floor in range(1, address.floor + 1):
+        for floor in range(1, address.floor_count + 1):
 
             try:
                 received = tcp_connector.send_tcp_request(':@{}A\r'.format(prepend_zero(floor)), address.url, address.port)

@@ -10,7 +10,7 @@ class Address(models.Model):
     username = models.CharField(max_length=127)
     url = models.CharField(max_length=255)
     port = models.IntegerField(default=1470, blank=True)
-    floor = models.IntegerField(default=1, blank=True)
+    floor_count = models.IntegerField(default=1, blank=True)
 
     class Meta:
         verbose_name_plural = 'Addresses'
@@ -23,12 +23,12 @@ class Data(models.Model):
     address = models.ForeignKey(Address)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     success = models.BooleanField(default=True)
-    err = models.CharField(max_length=255, null=True, default=None)
+    err = models.CharField(max_length=255, null=True, blank=True, default=None)
     datetime = models.DateTimeField(default=timezone.now)
     floor = models.IntegerField()
-    temp = models.FloatField(null=True, default=None)
-    humidity = models.FloatField(null=True, default=None)
-    relay = models.CharField(max_length=6, null=True, default=None)
+    temp = models.FloatField(null=True, blank=True, default=None)
+    humidity = models.FloatField(null=True, blank=True, default=None)
+    relay = models.CharField(max_length=6, null=True, blank=True, default=None)
 
     class Meta:
         verbose_name_plural = 'Data'
