@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseBadRequest
 from .models import *
-
+from .tasks import send_request_to_all_address
 
 def graph(request):
     user = request.GET.get('user', None)
@@ -24,3 +24,7 @@ def graph(request):
     return render(request, 'home/graph.html', {
         'data': data
     })
+
+def test_send(request):
+    send_request_to_all_address()
+    return HttpResponse('OK')

@@ -11,20 +11,10 @@ def recv_line(socket):
             data.append(char)
 
 
-# ":@01A\r"
-
-
-def send_tcp_request(message, address, port):
-    # TCP_IP = 'porhaifarm.dyndns-web.com'
-    print('MSG: ' + message)
-    print('ADDR: ' + address)
-    print('PORT: ' + str(port))
+def send_tcp_request(socket, message):
 
     MESSAGE = str.encode(message)
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((address, port))
-    s.send(MESSAGE)
-    data = recv_line(s)
-    s.close()
+    socket.send(MESSAGE)
+    data = recv_line(socket)
     print('RECEIVED: ' + data)
     return data

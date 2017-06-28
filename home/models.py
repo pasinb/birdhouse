@@ -25,7 +25,7 @@ class Data(models.Model):
     success = models.BooleanField(default=True)
     err = models.CharField(max_length=255, null=True, blank=True, default=None)
     datetime = models.DateTimeField(default=timezone.now)
-    floor = models.IntegerField()
+    floor = models.IntegerField(null=True)
     temp = models.FloatField(null=True, blank=True, default=None)
     humidity = models.FloatField(null=True, blank=True, default=None)
     relay = models.CharField(max_length=6, null=True, blank=True, default=None)
@@ -35,6 +35,6 @@ class Data(models.Model):
 
     def __str__(self):
         if not self.success:
-            return 'FAIL: {}'.format(self.err)
+            return '{} | FAIL: {}'.format(self.address, self.err)
         else:
             return '{} | FLOOR: {} | TEMP: {} | HUMI: {} | RELAY: {}'.format(self.address, self.floor, self.temp, self.humidity, self.relay)
