@@ -50,7 +50,7 @@ def send_request_to_all_address():
             relay = received[0] + received[1] + received[3] + received[5] + received[6] + received[7]
             Data.objects.create(success=True, temp=temp, humidity=humidity, relay=relay, address=address, floor=floor)
 
-            if (floor != address.floor):
+            if (floor != address.floor_count):
                 time.sleep(1)
 
 

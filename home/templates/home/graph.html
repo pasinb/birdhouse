@@ -6,7 +6,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.0.0/dygraph.min.js"></script>
     <link rel="stylesheet" src="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.0.0/dygraph.min.css" />
-    <script src="http://dygraphs.com/src/extras/synchronizer.js"></script>
+    <script type="text/javascript" src="http://dygraphs.com/src/extras/synchronizer.js"></script>
+    <script type="text/javascript" src="http://dygraphs.com/src/extras/smooth-plotter.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
     <style>
         .graph {
@@ -25,15 +26,29 @@
         <div id="relayChart" class="graph"></div>
     </div>
     <script type="text/javascript">
+        const nullList = [
+            {% for n in null_list %}[new Date("{{n.0.isoformat }}"),new Date("{{n.1.isoformat }}")],
+            {% endfor %}
+        ]
+        const defaultUnderlayCallback = function(canvas, area, g) {
+            let nullListLength = nullList.length;
+            for (let i = 0; i < nullListLength; i++) {
+                cords_start = g.toDomCoords(nullList[i][0])[0]
+                cords_end = g.toDomCoords(nullList[i][1])[0]
+                canvas.fillStyle = "rgba(255, 40, 40, 0.3)";
+                canvas.fillRect(cords_start, area.y, cords_end - cords_start, area.h);
+            }
+        }
         temp = new Dygraph(
             document.getElementById("tempChart"),
             [
-                {% for d in data %}[new Date("{{ d.datetime.isoformat }}"),{{ d.temp }}],
+                {% for d in data %}[new Date("{{ d.datetime.isoformat }}"),{% if d.success %}{{ d.temp }}{% else %} null {% endif %}],
                 {% endfor %}
             ],
             {
                 title: 'Temp',
-                showRangeSelector: true,
+                animatedZooms: true,
+                //showRangeSelector: true,
                 axes: {
                     x: {
                         valueFormatter: function(ms) {
@@ -42,17 +57,20 @@
                     }
                 },
                 labels: [ "Datetime", "Temp" ],
+                underlayCallback: defaultUnderlayCallback,
+                plotter: smoothPlotter,
             }
         );
         humi = new Dygraph(
             document.getElementById("humiChart"),
             [
-                {% for d in data %}[new Date("{{ d.datetime.isoformat }}"),{{ d.humidity }}],
+                {% for d in data %}[new Date("{{ d.datetime.isoformat }}"),{% if d.success %}{{ d.humidity }}{% else %} null {% endif %}],
                 {% endfor %}
             ],
             {
                 title: 'Humidity',
-                showRangeSelector: true,
+                animatedZooms: true,
+                //showRangeSelector: true,
                 axes: {
                     x: {
                         valueFormatter: function(ms) {
@@ -60,27 +78,32 @@
                         }
                     }
                 },
-                labels: [ "Datetime", "Humi" ]
+                labels: [ "Datetime", "Humi" ],
+                underlayCallback: defaultUnderlayCallback,
+                plotter: smoothPlotter,
             }
         );
         relay = new Dygraph(
             document.getElementById("relayChart"),
             [
                 {% for d in data %}[new Date("{{ d.datetime.isoformat }}"),
-                {% if d.relay.0 == "1" %} 6 {% else %} NaN {% endif %},
-                {% if d.relay.1 == "1" %} 5 {% else %} NaN {% endif %},
-                {% if d.relay.2 == "1" %} 4 {% else %} NaN {% endif %},
-                {% if d.relay.3 == "1" %} 3 {% else %} NaN {% endif %},
-                {% if d.relay.4 == "1" %} 2 {% else %} NaN {% endif %},
-                {% if d.relay.5 == "1" %} 1 {% else %} NaN {% endif %},
+                {% if d.relay.0 == "1" %} 6 {% else %} null {% endif %},
+                {% if d.relay.1 == "1" %} 5 {% else %} null {% endif %},
+                {% if d.relay.2 == "1" %} 4 {% else %} null {% endif %},
+                {% if d.relay.3 == "1" %} 3 {% else %} null {% endif %},
+                {% if d.relay.4 == "1" %} 2 {% else %} null {% endif %},
+                {% if d.relay.5 == "1" %} 1 {% else %} null {% endif %},
                 ],
                 {% endfor %}
             ],
             {
                 strokeWidth: 6.0,
                 title: 'Relay status',
+                animatedZooms: true,
                 valueRange: [0.5,6.5],
-                interactionModel: {},
+                zoomCallback: function() {
+                    relay.updateOptions({zoomRange: [0.5,6.5]});
+                },
                 axes: {
                     y: {
                         axisLabelFormatter: function(d) {
@@ -100,11 +123,16 @@
                             if(y != null) return 'ON'
                                 return 'OFF'
                         },
-
-                        valueFormatter_bak: function(y) {
-                            if(y != null) return 'ON'
-                            return 'OFF'
-                        },
+                        ticker: function(min, max, pixels, opts, dygraph, vals) {
+                            return [
+                            {v:6, label:"Relay 1"}, 
+                            {v:5, label:"Relay 2"}, 
+                            {v:4, label:"Relay 3"},
+                            {v:3, label:"Relay 4"},
+                            {v:2, label:"Relay 5"},
+                            {v:1, label:"Relay 6"},
+                            ];
+                        }
                     },
                     x: {
                         valueFormatter: function(ms) {
@@ -112,7 +140,8 @@
                         }
                     }
                 },
-                labels: [ "Datetime", "Relay 1", "Relay 2" , "Relay 3" , "Relay 4" , "Relay 5" , "Relay 6"  ]
+                labels: [ "Datetime", "Relay 1", "Relay 2" , "Relay 3" , "Relay 4" , "Relay 5" , "Relay 6"  ],
+                underlayCallback: defaultUnderlayCallback
             }
         );
         var gs = [];
