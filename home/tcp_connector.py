@@ -12,9 +12,7 @@ def recv_line(socket):
 
 
 def send_tcp_request(socket, message):
-
     MESSAGE = str.encode(message)
     socket.send(MESSAGE)
     data = recv_line(socket)
-    print('RECEIVED: ' + data)
     return data
