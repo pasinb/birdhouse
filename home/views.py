@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from .models import *
 from .tasks import send_request_to_all_address
 from itertools import tee, islice, chain
-
+import datetime
 
 def previous_and_next(some_iterable):
     prevs, items, nexts = tee(some_iterable, 3)
@@ -29,7 +29,15 @@ def graph(request):
     if int(floor) < 1 or int(floor) > address.floor_count:
         return HttpResponseBadRequest('invalid floor for user')
 
-    data = Data.objects.filter(floor=floor, address=address).values('success', 'datetime', 'temp', 'humidity', 'relay').order_by('datetime')
+    data = Data.objects.filter(floor=floor, address=address).values('success', 'datetime', 'temp', 'humidity', 'relay')
+    date_filter = request.GET.get('show', None)
+    if date_filter == 'show-day':
+        data = data.filter(datetime__gte=timezone.now() - timezone.timedelta(days=1))
+    elif date_filter == 'show-week':
+        data = data.filter(datetime__gte=timezone.now() - timezone.timedelta(weeks=1))
+    elif date_filter == 'show-month':
+        data = data.filter(datetime__gte=timezone.now() - timezone.timedelta(days=30))
+    data = data.order_by('datetime')
     null_list = []
 
     for previous, d, nxt in previous_and_next(data):

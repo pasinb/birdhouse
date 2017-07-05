@@ -33,7 +33,6 @@ ALLOWED_HOSTS = ['128.199.227.220', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -42,6 +41,10 @@ INSTALLED_APPS = [
     'home',
     'django_celery_results',
     'django_celery_beat',
+    'material',
+    'material.admin',
+    'django.contrib.admin',
+
 ]
 
 CELERY_RESULT_BACKEND = 'django-db'
@@ -73,6 +76,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'birdhouse.wsgi.application'
 
