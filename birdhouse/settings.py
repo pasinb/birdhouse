@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'home',
     'django_celery_results',
     'django_celery_beat',
+    'material.theme.lightblue',
     'material',
     'material.admin',
     'django.contrib.admin',
