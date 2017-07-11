@@ -8,7 +8,7 @@ from django.utils import timezone
 class Address(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     username = models.CharField(max_length=127)
-    url = models.CharField(max_length=255)
+    url = models.CharField(max_length=255, verbose_name="URL")
     port = models.IntegerField(default=1470, blank=True)
     floor_count = models.IntegerField(default=1, blank=True)
 
@@ -16,7 +16,7 @@ class Address(models.Model):
         verbose_name_plural = 'Addresses'
 
     def __str__(self):
-        return self.username + ' | ' + self.url
+        return '{} [{}]'.format(self.username,self.url)
 
 
 class Data(models.Model):
