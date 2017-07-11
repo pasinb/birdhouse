@@ -13,7 +13,7 @@ class Address(models.Model):
     floor_count = models.IntegerField(default=1, blank=True)
 
     class Meta:
-        verbose_name_plural = 'Addresses'
+        verbose_name_plural = 'List Addresses'
 
     def __str__(self):
         return '{} [{}]'.format(self.username,self.url)

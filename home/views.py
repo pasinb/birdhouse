@@ -4,7 +4,7 @@ from .models import *
 from .tasks import send_request_to_all_address
 from itertools import tee, islice, chain
 import datetime
-
+from django.views.decorators.cache import never_cache
 
 def previous_and_next(some_iterable):
     prevs, items, nexts = tee(some_iterable, 3)
@@ -12,7 +12,7 @@ def previous_and_next(some_iterable):
     nexts = chain(islice(nexts, 1, None), [None])
     return zip(prevs, items, nexts)
 
-
+@never_cache
 def graph(request):
     user = request.GET.get('user', None)
     if user is None:
