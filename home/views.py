@@ -38,9 +38,10 @@ def graph(request):
     elif date_filter.lower() == 'show-month':
         data = data.filter(datetime__gte=timezone.now() - timezone.timedelta(days=30))
     data = data.order_by('datetime')
-    null_list = []
 
+    null_list = []
     for previous, d, nxt in previous_and_next(data):
+        print(d['success'])
         if not d['success']:
             if nxt is not None and not nxt['success']:
                 null_list.append([d['datetime'], nxt['datetime']])
