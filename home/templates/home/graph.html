@@ -16,6 +16,25 @@
                 background-color: #F6F6F6;
                 margin: 0;
             }
+            select {
+                min-width: 60px;
+                padding: 3px 12px;
+                font-size: 1.5rem;
+                color: #666666;
+                background-color: white;
+                border-width: 1px;
+                border-color: lightgray;
+                cursor: pointer;
+            }
+            select:hover {
+                color: #666666;
+                background-color: lightgray;
+            }
+            select:active {
+                color: #666666;
+                background-color: gray;
+            }
+            
             .graph-1 {
                 padding: 1rem;
                 padding: 1.5rem 4rem 1.5rem 3rem;
@@ -31,36 +50,77 @@
                 font-weight: bold;
                 text-align: center;
             }
+            .brand-title {
+                text-align: center;
+                background-color: #141327;
+                padding: 1.5rem;
+            }
             .title {
                 text-align: center;
                 background-color: #0064AF;
-                padding: 0.15rem;
+                /*background-color: rgba(16,16,30,50);*/
+                padding: 1rem;
                 margin-bottom: 0.5rem;
             }
             .title-font {
-                font-weight: 400;
-                font-size: 2rem;
+                font-weight: 300;
+                font-size: 1.5rem;
                 color: white;
+            }
+            .subtitle {
+                text-align: center;
+                padding: 0.15rem;
+                margin-bottom: 0.5rem;
+            }
+            .btn {
+                padding: 8px 16px;
+                font-size: 1rem;
+                background-color: transparent;
+                border-width: 1px;
+                border-color: lightgray;
+            }
+            .btn:hover {
+                padding: 8px 16px;
+                font-size: 1rem;
+                background-color: lightgray;
+                border-width: 1px;
+                border-color: lightgray;
+                cursor: pointer;
+            }
+            .btn:active {
+                padding: 8px 16px; 
+                font-size: 1rem;
+                background-color: gray;
+                border-width: 1px;
+                border-color: lightgray;
+                cursor: pointer;
             }
 
 
         </style>
     <body>
+    <div class="brand-title">
+        <div style="color:#CAA356; font-size:2rem; margin-bottom:0.2rem">PorSci.</div>
+        <div style="color: white; font-size:1rem;">swiftech farming</div>
+    </div>
     <div class="title">
-        <h1 class="title-font">{{user}} Floor
+        <div class="title-font">{{user}} Floor
             <select onchange="updateQueryParams('floor',this.value)">
                 {% for f in floor_count %}
                 <option value="{{ forloop.counter }}" {% if f == floor %}selected{% endif %}>{{ forloop.counter }}</option>
                 {% endfor %}
-            </select></h1>
-        <button onclick="updateQueryParams('show','show-day')">
-            Show day
+            </select>
+        </div>
+    </div>
+    <div class="subtitle">
+        <button class="btn" onclick="updateQueryParams('show','show-day')">
+            Day
         </button>
-        <button onclick="updateQueryParams('show','show-week')">
-            Show week
+        <button class="btn" onclick="updateQueryParams('show','show-week')">
+            Week
         </button>
-        <button onclick="updateQueryParams('show','show-month')">
-            Show month
+        <button class="btn" onclick="updateQueryParams('show','show-month')">
+            Month
         </button>
     </div>
 
@@ -130,7 +190,7 @@
                     },
                     labels: [ "Datetime", "Temp" ],
                     underlayCallback: defaultUnderlayCallback,
-                    plotter: smoothPlotter,
+                    // plotter: smoothPlotter,
                     axisLineWidth: 1.5,
                     strokeWidth: 2.5,
                     color: "#DA8400"
@@ -152,7 +212,7 @@
                     },
                     labels: [ "Datetime", "Humi" ],
                     underlayCallback: defaultUnderlayCallback,
-                    plotter: smoothPlotter,
+                    // plotter: smoothPlotter,
                     axisLineWidth: 1.5,
                     strokeWidth: 2.5,
                     color: "#008686"
