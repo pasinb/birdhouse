@@ -86,10 +86,15 @@ WSGI_APPLICATION = 'birdhouse.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'mydatabase',
-    }
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': constants['BIRDHOUSE_DB_NAME'],
+        'USER': constants['BIRDHOUSE_DB_USER'],
+        'PASSWORD': constants['BIRDHOUSE_DB_PASSWORD'],
+        'HOST': 'localhost',
+        'PORT': '5432',
+    },
 }
+
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 
