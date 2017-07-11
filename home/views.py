@@ -31,12 +31,12 @@ def graph(request):
         return HttpResponseBadRequest('invalid floor for user')
 
     data = Data.objects.filter(floor=floor, address=address).values('success', 'datetime', 'temp', 'humidity', 'relay')
-    date_filter = request.GET.get('show', '')
-    if date_filter.lower() == 'show-day':
+    date_filter = request.GET.get('show', '').lower()
+    if date_filter == 'show-day':
         data = data.filter(datetime__gte=timezone.now() - timezone.timedelta(days=1))
-    elif date_filter.lower() == 'show-week':
+    elif date_filter == 'show-week':
         data = data.filter(datetime__gte=timezone.now() - timezone.timedelta(weeks=1))
-    elif date_filter.lower() == 'show-month':
+    elif date_filter == 'show-month':
         data = data.filter(datetime__gte=timezone.now() - timezone.timedelta(days=30))
     data = data.order_by('datetime')
 
@@ -51,7 +51,8 @@ def graph(request):
         'null_list': null_list,
         'user': address.username.title(),
         'floor': int(floor),
-        'floor_count': range(1, address.floor_count + 1)
+        'floor_count': range(1, address.floor_count + 1),
+        'date_filter': date_filter
     })
 
 

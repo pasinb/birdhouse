@@ -79,6 +79,13 @@
                 border-width: 1px;
                 border-color: lightgray;
             }
+            .btn-selected {
+                padding: 8px 16px;
+                font-size: 1rem;
+                background-color: lightgray;
+                border-width: 1px;
+                border-color: lightgray;
+            }
             .btn:hover {
                 padding: 8px 16px;
                 font-size: 1rem;
@@ -113,13 +120,13 @@
         </div>
     </div>
     <div class="subtitle">
-        <button class="btn" onclick="updateQueryParams('show','show-day')">
+        <button class="{% if date_filter == 'show-day' %}btn-selected{% else %}btn{% endif %}" onclick="updateQueryParams('show','show-day')">
             Day
         </button>
-        <button class="btn" onclick="updateQueryParams('show','show-week')">
+        <button class="{% if date_filter == 'show-week' %}btn-selected{% else %}btn{% endif %}" onclick="updateQueryParams('show','show-week')">
             Week
         </button>
-        <button class="btn" onclick="updateQueryParams('show','show-month')">
+        <button class="{% if date_filter == 'show-month' %}btn-selected{% else %}btn{% endif %}" onclick="updateQueryParams('show','show-month')">
             Month
         </button>
     </div>
