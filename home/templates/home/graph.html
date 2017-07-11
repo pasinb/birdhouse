@@ -1,51 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Graph</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.0.0/dygraph.min.js"></script>
-    <link rel="stylesheet" src="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.0.0/dygraph.min.css" />
-    <script type="text/javascript" src="http://dygraphs.com/src/extras/synchronizer.js"></script>
-    <script type="text/javascript" src="http://dygraphs.com/src/extras/smooth-plotter.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
-    <style>
+    <head>
+        <meta charset="UTF-8">
+        <title>Graph</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.0.0/dygraph.min.js"></script>
+        <link rel="stylesheet" src="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.0.0/dygraph.min.css"/>
+        <script type="text/javascript" src="http://dygraphs.com/src/extras/synchronizer.js"></script>
+        <script type="text/javascript" src="http://dygraphs.com/src/extras/smooth-plotter.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+        <style>
 
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background-color: #F6F6F6;
-            margin: 0;
-        }
-        .graph-1 {
-            padding: 1rem;     
-            padding: 1.5rem 4rem 1.5rem 3rem;
-        }
-        .graph-2 {
-            background-color:#E8E8E8;
-            padding: 1.5rem 4rem 1.5rem 3rem;
-        }
-        .graph-content {
-            height: 270px; 
-        }
-        .dygraph-title {
-            font-weight: bold;
-            text-align: center;
-        }
-        .title {
-            text-align: center;
-            background-color: #0064AF;
-            padding: 0.15rem;
-            margin-bottom: 0.5rem;
-        }
-        .title-font {
-            font-weight: 400;
-            font-size: 2rem;
-            color: white;
-        }
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+                background-color: #F6F6F6;
+                margin: 0;
+            }
+            .graph-1 {
+                padding: 1rem;
+                padding: 1.5rem 4rem 1.5rem 3rem;
+            }
+            .graph-2 {
+                background-color:#E8E8E8;
+                padding: 1.5rem 4rem 1.5rem 3rem;
+            }
+            .graph-content {
+                height: 270px;
+            }
+            .dygraph-title {
+                font-weight: bold;
+                text-align: center;
+            }
+            .title {
+                text-align: center;
+                background-color: #0064AF;
+                padding: 0.15rem;
+                margin-bottom: 0.5rem;
+            }
+            .title-font {
+                font-weight: 400;
+                font-size: 2rem;
+                color: white;
+            }
 
-    </style>
-<body>
-    <div class="title"><h1 class="title-font">{{user}} Floor {{floor}}</h1></div>
+
+        </style>
+    <body>
+    <div class="title">
+        <h1 class="title-font">{{user}} Floor
+            <select onchange="updateQueryParams('floor',this.value)">
+                {% for f in floor_count %}
+                <option value="{{ forloop.counter }}" {% if f == floor %}selected{% endif %}>{{ forloop.counter }}</option>
+                {% endfor %}
+            </select></h1>
+        <button onclick="updateQueryParams('show','show-day')">
+            Show day
+        </button>
+        <button onclick="updateQueryParams('show','show-week')">
+            Show week
+        </button>
+        <button onclick="updateQueryParams('show','show-month')">
+            Show month
+        </button>
+    </div>
+
     <div class="graph-1">
         <div id="tempChart" class="graph-content"></div>
     </div>
@@ -55,141 +73,153 @@
     <div class="graph-1">
         <div id="relayChart" class="graph-content"></div>
     </div>
-    
     <script type="text/javascript">
+            function updateQueryParams(key, value) {
+                let uri = window.location.href
+                var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+                    var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+                if (uri.match(re)) {
+                    uri = uri.replace(re, '$1' + key + "=" + value + '$2');
+                }
+                else {
+                    uri = uri + separator + key + "=" + value;
+                }
+                window.location.href = uri
+            }
 
-        const nullList = [
-            {% for n in null_list %}[new Date("{{n.0.isoformat }}"),new Date("{{n.1.isoformat }}")],
-            {% endfor %}
-        ]
-        // datetime, temp, humi, relay 1-6
-        const dataList = [{% for d in data %}["{{ d.datetime.isoformat }}",{% if d.success %}{{ d.temp }}{% endif %},{% if d.success %}{{ d.humidity }}{% endif %},{% if d.relay.0 == "1" %}6{% endif %},{% if d.relay.1 == "1" %}5{% endif %},{% if d.relay.2 == "1" %}4{% endif %},{% if d.relay.3 == "1" %}3{% endif %},{% if d.relay.4 == "1" %}2{% endif %},{% if d.relay.5 == "1" %}1{% endif %}],{% endfor %}
-        ]
-        const dataListLength = dataList.length
-        let dataTemp = new Array(dataListLength)
-        let dataHumi = new Array(dataListLength)
-        let dataRelay = new Array(dataListLength)
-        for (let i = 0; i < dataList.length; i++){
-            dataList[i][0] = new Date(dataList[i][0])
-            dataTemp[i] = ([ dataList[i][0],dataList[i][1] ])
-            dataHumi[i] = ([ dataList[i][0],dataList[i][2] ])
-            dataRelay[i] = ([ dataList[i][0],dataList[i][3],dataList[i][4],dataList[i][5],dataList[i][6],dataList[i][7],dataList[i][8] ])
-        }
+            const nullList = [
+                {% for n in null_list %}[new Date("{{n.0.isoformat }}"),new Date("{{n.1.isoformat }}")],
+                {% endfor %}
+            ]
+            // datetime, temp, humi, relay 1-6
+            const dataList = [{% for d in data %}["{{ d.datetime.isoformat }}",{% if d.success %}{{ d.temp }}{% endif %},{% if d.success %}{{ d.humidity }}{% endif %},{% if d.relay.0 == "1" %}6{% endif %},{% if d.relay.1 == "1" %}5{% endif %},{% if d.relay.2 == "1" %}4{% endif %},{% if d.relay.3 == "1" %}3{% endif %},{% if d.relay.4 == "1" %}2{% endif %},{% if d.relay.5 == "1" %}1{% endif %}],{% endfor %}
+            ]
+            const dataListLength = dataList.length
+            let dataTemp = new Array(dataListLength)
+            let dataHumi = new Array(dataListLength)
+            let dataRelay = new Array(dataListLength)
+            for (let i = 0; i < dataList.length; i++){
+                dataList[i][0] = new Date(dataList[i][0])
+                dataTemp[i] = ([ dataList[i][0],dataList[i][1] ])
+                dataHumi[i] = ([ dataList[i][0],dataList[i][2] ])
+                dataRelay[i] = ([ dataList[i][0],dataList[i][3],dataList[i][4],dataList[i][5],dataList[i][6],dataList[i][7],dataList[i][8] ])
+            }
 
-        const defaultUnderlayCallback = function(canvas, area, g) {
-            let nullListLength = nullList.length;
-            for (let i = 0; i < nullListLength; i++) {
-                cords_start = g.toDomCoords(nullList[i][0])[0]
-                cords_end = g.toDomCoords(nullList[i][1])[0]
-                canvas.fillStyle = "rgba(255, 40, 40, 0.3)";
-                canvas.fillRect(cords_start, area.y, cords_end - cords_start, area.h);
+            const defaultUnderlayCallback = function(canvas, area, g) {
+                let nullListLength = nullList.length;
+                for (let i = 0; i < nullListLength; i++) {
+                    cords_start = g.toDomCoords(nullList[i][0])[0]
+                    cords_end = g.toDomCoords(nullList[i][1])[0]
+                    canvas.fillStyle = "rgba(255, 40, 40, 0.3)";
+                    canvas.fillRect(cords_start, area.y, cords_end - cords_start, area.h);
+                }
             }
-        }
-        temp = new Dygraph(
-            document.getElementById("tempChart"),
-            dataTemp,
-            {
-                title: 'Temp',
-                animatedZooms: true,
-                //showRangeSelector: true,
-                axes: {
-                    x: {
-                        valueFormatter: function(ms) {
-                            return moment(ms).format('DD/MM/YY HH:mm:ss')
-                        }
-                    }
-                },
-                labels: [ "Datetime", "Temp" ],
-                underlayCallback: defaultUnderlayCallback,
-                plotter: smoothPlotter,
-                axisLineWidth: 1.5,
-                strokeWidth: 2.5,
-                color: "#DA8400"
-            }
-        );
-        humi = new Dygraph(
-            document.getElementById("humiChart"),
-            dataHumi,
-            {
-                title: 'Humidity',
-                animatedZooms: true,
-                //showRangeSelector: true,
-                axes: {
-                    x: {
-                        valueFormatter: function(ms) {
-                            return moment(ms).format('DD/MM/YY HH:mm:ss')
-                        }
-                    }
-                },
-                labels: [ "Datetime", "Humi" ],
-                underlayCallback: defaultUnderlayCallback,
-                plotter: smoothPlotter,
-                axisLineWidth: 1.5,
-                strokeWidth: 2.5,
-                color: "#008686"
-            }
-        );
-        relay = new Dygraph(
-            document.getElementById("relayChart"),
-            dataRelay,
-            {
-                strokeWidth: 6.0,
-                axisLineWidth: 1.5,
-                title: 'Relay status',
-                animatedZooms: true,
-                valueRange: [0.5,6.5],
-                zoomCallback: function() {
-                    relay.updateOptions({zoomRange: [0.5,6.5]});
-                },
-                axes: {
-                    y: {
-                        axisLabelFormatter: function(d) {
-                            switch(d) {
-                                case 6: return 'Relay 1'
-                                case 5: return 'Relay 2'
-                                case 4: return 'Relay 3'
-                                case 3: return 'Relay 4'
-                                case 2: return 'Relay 5'
-                                case 1: return 'Relay 6'
-                                default:
-                                    return ''
+            temp = new Dygraph(
+                document.getElementById("tempChart"),
+                dataTemp,
+                {
+                    title: 'Temp',
+                    animatedZooms: true,
+                    //showRangeSelector: true,
+                    axes: {
+                        x: {
+                            valueFormatter: function(ms) {
+                                return moment(ms).format('DD/MM/YY HH:mm:ss')
                             }
-                        },
-                        valueFormatter: function(y, opts, series_name) {
-                            //TODO show OFF for null
-                            if(y != null) return 'ON'
-                                return 'OFF'
-                        },
-                        ticker: function(min, max, pixels, opts, dygraph, vals) {
-                            return [
-                            {v:6, label:"Relay 1"}, 
-                            {v:5, label:"Relay 2"}, 
-                            {v:4, label:"Relay 3"},
-                            {v:3, label:"Relay 4"},
-                            {v:2, label:"Relay 5"},
-                            {v:1, label:"Relay 6"},
-                            ];
                         }
                     },
-                    x: {
-                        valueFormatter: function(ms) {
-                            return moment(ms).format('DD/MM/YY HH:mm:ss')
+                    labels: [ "Datetime", "Temp" ],
+                    underlayCallback: defaultUnderlayCallback,
+                    plotter: smoothPlotter,
+                    axisLineWidth: 1.5,
+                    strokeWidth: 2.5,
+                    color: "#DA8400"
+                }
+            );
+            humi = new Dygraph(
+                document.getElementById("humiChart"),
+                dataHumi,
+                {
+                    title: 'Humidity',
+                    animatedZooms: true,
+                    //showRangeSelector: true,
+                    axes: {
+                        x: {
+                            valueFormatter: function(ms) {
+                                return moment(ms).format('DD/MM/YY HH:mm:ss')
+                            }
                         }
-                    }
-                },
-                labels: [ "Datetime", "Relay 1", "Relay 2" , "Relay 3" , "Relay 4" , "Relay 5" , "Relay 6"  ],
-                underlayCallback: defaultUnderlayCallback
-            }
-        );
-        var gs = [];
-        gs.push(temp);
-        gs.push(humi);
-        gs.push(relay);
-        sync = Dygraph.synchronize(gs, {
-            zoom: true,
-            range: false,
-            selection: true
-        });
+                    },
+                    labels: [ "Datetime", "Humi" ],
+                    underlayCallback: defaultUnderlayCallback,
+                    plotter: smoothPlotter,
+                    axisLineWidth: 1.5,
+                    strokeWidth: 2.5,
+                    color: "#008686"
+                }
+            );
+            relay = new Dygraph(
+                document.getElementById("relayChart"),
+                dataRelay,
+                {
+                    strokeWidth: 6.0,
+                    axisLineWidth: 1.5,
+                    title: 'Relay status',
+                    animatedZooms: true,
+                    valueRange: [0.5,6.5],
+                    zoomCallback: function() {
+                        relay.updateOptions({zoomRange: [0.5,6.5]});
+                    },
+                    axes: {
+                        y: {
+                            axisLabelFormatter: function(d) {
+                                switch(d) {
+                                    case 6: return 'Relay 1'
+                                    case 5: return 'Relay 2'
+                                    case 4: return 'Relay 3'
+                                    case 3: return 'Relay 4'
+                                    case 2: return 'Relay 5'
+                                    case 1: return 'Relay 6'
+                                    default:
+                                        return ''
+                                }
+                            },
+                            valueFormatter: function(y, opts, series_name) {
+                                //TODO show OFF for null
+                                if(y != null) return 'ON'
+                                    return 'OFF'
+                            },
+                            ticker: function(min, max, pixels, opts, dygraph, vals) {
+                                return [
+                                {v:6, label:"Relay 1"},
+                                {v:5, label:"Relay 2"},
+                                {v:4, label:"Relay 3"},
+                                {v:3, label:"Relay 4"},
+                                {v:2, label:"Relay 5"},
+                                {v:1, label:"Relay 6"},
+                                ];
+                            }
+                        },
+                        x: {
+                            valueFormatter: function(ms) {
+                                return moment(ms).format('DD/MM/YY HH:mm:ss')
+                            }
+                        }
+                    },
+                    labels: [ "Datetime", "Relay 1", "Relay 2" , "Relay 3" , "Relay 4" , "Relay 5" , "Relay 6"  ],
+                    underlayCallback: defaultUnderlayCallback
+                }
+            );
+            var gs = [];
+            gs.push(temp);
+            gs.push(humi);
+            gs.push(relay);
+            sync = Dygraph.synchronize(gs, {
+                zoom: true,
+                range: false,
+                selection: true
+            });
+
     </script>
-</body>
+    </body>
 </html>
