@@ -10,22 +10,52 @@
     <script type="text/javascript" src="http://dygraphs.com/src/extras/smooth-plotter.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
     <style>
-        .graph {
-            height: 25vh;
-            margin-bottom: 2rem;
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #F6F6F6;
+            margin: 0;
+        }
+        .graph-1 {
+            padding: 1rem;     
+            padding: 1.5rem 4rem 1.5rem 3rem;
+        }
+        .graph-2 {
+            background-color:#E8E8E8;
+            padding: 1.5rem 4rem 1.5rem 3rem;
+        }
+        .graph-content {
+            height: 270px; 
         }
         .dygraph-title {
             font-weight: bold;
             text-align: center;
         }
+        .title {
+            text-align: center;
+            background-color: #0064AF;
+            padding: 0.15rem;
+            margin-bottom: 0.5rem;
+        }
+        .title-font {
+            font-weight: 400;
+            font-size: 2rem;
+            color: white;
+        }
+
     </style>
 <body>
-    <center><h1>{{user}} Floor {{floor}}</h1></center>
-    <div style="padding-left: 5rem, padding-right: 5rem">
-        <div id="tempChart" class="graph"></div>
-        <div id="humiChart" class="graph"></div>
-        <div id="relayChart" class="graph"></div>
+    <div class="title"><h1 class="title-font">{{user}} Floor {{floor}}</h1></div>
+    <div class="graph-1">
+        <div id="tempChart" class="graph-content"></div>
     </div>
+    <div class="graph-2">
+        <div id="humiChart" class="graph-content"></div>
+    </div>
+    <div class="graph-1">
+        <div id="relayChart" class="graph-content"></div>
+    </div>
+    
     <script type="text/javascript">
 
         const nullList = [
@@ -72,6 +102,9 @@
                 labels: [ "Datetime", "Temp" ],
                 underlayCallback: defaultUnderlayCallback,
                 plotter: smoothPlotter,
+                axisLineWidth: 1.5,
+                strokeWidth: 2.5,
+                color: "#DA8400"
             }
         );
         humi = new Dygraph(
@@ -91,6 +124,9 @@
                 labels: [ "Datetime", "Humi" ],
                 underlayCallback: defaultUnderlayCallback,
                 plotter: smoothPlotter,
+                axisLineWidth: 1.5,
+                strokeWidth: 2.5,
+                color: "#008686"
             }
         );
         relay = new Dygraph(
@@ -98,6 +134,7 @@
             dataRelay,
             {
                 strokeWidth: 6.0,
+                axisLineWidth: 1.5,
                 title: 'Relay status',
                 animatedZooms: true,
                 valueRange: [0.5,6.5],
