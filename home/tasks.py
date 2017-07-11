@@ -32,7 +32,8 @@ def send_request_to_all_address():
             sock.settimeout(4)
             sock.connect((address.url, address.port))
         except Exception as exception:
-            create_failed_addr(str(exception), address, None)
+            for floor in range(1, address.floor_count + 1):
+                create_failed_addr(str(exception), address, floor)
             continue
 
         for floor in range(1, address.floor_count + 1):
