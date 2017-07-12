@@ -13,7 +13,7 @@
 
             body {
                 font-family: Arial, Helvetica, sans-serif;
-                background-color: #F6F6F6;
+                background-color: white;
                 margin: 0;
             }
             select {
@@ -40,7 +40,12 @@
                 padding: 1.5rem 4rem 1.5rem 3rem;
             }
             .graph-2 {
-                background-color:#E8E8E8;
+                /*background-color:#F9F9F9;*/
+                padding: 1.5rem 4rem 1.5rem 3rem;
+            }
+            .graph-3 {
+                background-color:#E5E3EB;
+                /*background-color:rgba(4,125,39,0.2);*/
                 padding: 1.5rem 4rem 1.5rem 3rem;
             }
             .graph-content {
@@ -51,14 +56,16 @@
                 text-align: center;
             }
             .brand-title {
-                text-align: center;
+                text-align: left;
                 background-color: #141327;
                 padding: 1.5rem;
             }
             .title {
                 text-align: center;
-                background-color: #0064AF;
+                background-color: #656273;
                 /*background-color: rgba(16,16,30,50);*/
+                /*background-color: rgba();*/
+                /*background-color: rgba(4,125,39,0.3);*/
                 padding: 1rem;
                 margin-bottom: 0.5rem;
             }
@@ -103,12 +110,11 @@
                 cursor: pointer;
             }
 
-
         </style>
     <body>
     <div class="brand-title">
-        <div style="color:#CAA356; font-size:2rem; margin-bottom:0.2rem">PorSci.</div>
-        <div style="color: white; font-size:1rem;">swiftech farming</div>
+        <span style="color:#CAA356; font-size:2.25rem; margin-left:1.5rem">PorSci.</span>
+        <span style="color: white; font-size:1.5rem; margin-left:.2rem">swiftech farming</span>
     </div>
     <div class="title">
         <div class="title-font">{{user}} Floor
@@ -137,7 +143,7 @@
     <div class="graph-2">
         <div id="humiChart" class="graph-content"></div>
     </div>
-    <div class="graph-1">
+    <div class="graph-3">
         <div id="relayChart" class="graph-content"></div>
     </div>
     <script type="text/javascript">
@@ -200,7 +206,7 @@
                     // plotter: smoothPlotter,
                     axisLineWidth: 1.5,
                     strokeWidth: 2.5,
-                    color: "#DA8400"
+                    color: "#EC8F00"
                 }
             );
             humi = new Dygraph(
@@ -222,7 +228,7 @@
                     // plotter: smoothPlotter,
                     axisLineWidth: 1.5,
                     strokeWidth: 2.5,
-                    color: "#008686"
+                    color: "#009C71"
                 }
             );
             relay = new Dygraph(
@@ -230,6 +236,7 @@
                 dataRelay,
                 {
                     strokeWidth: 6.0,
+                    colors: ["#E8853C", "#2CB560", "#0064AF"],
                     axisLineWidth: 1.5,
                     title: 'Relay status',
                     animatedZooms: true,
