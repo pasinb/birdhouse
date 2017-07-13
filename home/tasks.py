@@ -3,7 +3,7 @@ from celery import shared_task
 from . import tcp_connector
 from .models import *
 import time
-import socket
+import socket, errno
 
 
 def prepend_zero(num):
@@ -19,17 +19,14 @@ def create_failed_addr(err, address, floor):
     Data.objects.create(err=err, success=False, address=address, floor=floor)
 
 
-# TODO erase old data task
-
 @shared_task
 def send_request_to_all_address():
     # TODO parallel for multiple addr
     address_list = Address.objects.all()
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(4)
     for address in address_list:
-
         try:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.settimeout(4)
             sock.connect((address.url, address.port))
         except Exception as exception:
             for floor in range(1, address.floor_count + 1):
@@ -39,20 +36,36 @@ def send_request_to_all_address():
         for floor in range(1, address.floor_count + 1):
             try:
                 temphumi = tcp_connector.send_tcp_request(sock, ':@{}A\r'.format(prepend_zero(floor)))
-                # create_failed_addr(str(exception), address, floor)
+                # EXPECTED RESPONSE: tttthhh_tttthhh
+                # Temp is in format ttt.t, and humi in hh.h
+                # First tttthhh is CALIBRATE, second is REAL, we only need CALIBRATE
                 if (len(temphumi) != 15):
-                    create_failed_addr('temp/humid wrong size', address, floor)
+                    create_failed_addr("The length of temp/humid string is wrong", address, floor)
                     continue
                 temp = temphumi[0:3] + '.' + temphumi[3:4]
                 humidity = temphumi[4:6] + '.' + temphumi[6:7]
 
                 relay = tcp_connector.send_tcp_request(sock, ':@{}4\r'.format(prepend_zero(floor)))
+                # EXPECTED RESPONSE: xxxxxxxx
+                # x is 0 or 1
+                # Relay 1-6 corresponds to following index of response string:
+                #  R1 R2    R3    R4 R5 R6
+                #  |  |     |     |  |  |
+                #  x  x  x  x  x  x  x  x
                 if (len(relay) != 8):
-                    create_failed_addr('relay wrong size', address, floor)
+                    create_failed_addr("The length of relay string is wrong", address, floor)
                     continue
                 relay = relay[0] + relay[1] + relay[3] + relay[5] + relay[6] + relay[7]
-                current_time = timezone.now()
-                current_time = current_time.replace(second=0, microsecond=0)
+                current_time = timezone.now().replace(second=0, microsecond=0)
+            except socket.timeout as e:
+                create_failed_addr('Request timed out', address, floor)
+                continue
+            except socket.error as e:
+                if e.errno == errno.ECONNREFUSED:
+                    create_failed_addr('Connection refused', address, floor)
+                else:
+                    create_failed_addr(str(exception), address, floor)
+                continue
             except Exception as exception:
                 create_failed_addr(str(exception), address, floor)
                 continue
@@ -64,4 +77,4 @@ def send_request_to_all_address():
 
 @shared_task
 def cleanup():
-    pass  # TODO
+    pass  # TODO erase old data task

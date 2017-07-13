@@ -16,19 +16,19 @@ def previous_and_next(some_iterable):
 def graph(request):
     user = request.GET.get('user', None)
     if user is None:
-        return HttpResponseBadRequest('need "user" parameter')
+        return HttpResponseBadRequest("The 'user' parameter is required.")
     try:
         address = Address.objects.get(username=user)
     except Address.DoesNotExist:
-        return HttpResponseBadRequest('user does not exist')
+        return HttpResponseBadRequest('User does not exist.')
 
     floor = request.GET.get('floor', None)
     if floor is None:
-        return HttpResponseBadRequest('need "floor" parameter')
+        return HttpResponseBadRequest("The 'floor' parameter is required.")
     if not floor.isdigit():
-        return HttpResponseBadRequest('floor must be integer')
+        return HttpResponseBadRequest("The 'floor' parameter must be integer.")
     if int(floor) < 1 or int(floor) > address.floor_count:
-        return HttpResponseBadRequest('invalid floor for user')
+        return HttpResponseBadRequest('Invalid floor.')
 
     data = Data.objects.filter(floor=floor, address=address).values('success', 'datetime', 'temp', 'humidity', 'relay')
     date_filter = request.GET.get('show', '').lower()
@@ -41,10 +41,10 @@ def graph(request):
     data = data.order_by('datetime')
 
     null_list = []
-    for previous, d, nxt in previous_and_next(data):
+    for previous, d, next in previous_and_next(data):
         if not d['success']:
-            if nxt is not None and not nxt['success']:
-                null_list.append([d['datetime'], nxt['datetime']])
+            if next is not None and not next['success']:
+                null_list.append([d['datetime'], next['datetime']])
 
     return render(request, 'home/graph.html', {
         'data': data,
