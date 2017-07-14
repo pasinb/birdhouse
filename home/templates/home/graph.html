@@ -227,11 +227,14 @@
                     strokeWidth: 2.5,
                     color: "#EC8F00",
                     {% if enforce_zoom_limit %}zoomCallback: function (minDate, maxDate, yRange) {
-                        var difference = maxDate - minDate;
-                        if ((difference / 1000 / 60) < 60) {
-                            maxDate = new Date(minDate + 3600000)
+                        if(typeof(maxDate)=='string') return
+                        var difference = maxDate - minDate
+                        if ( difference < 3600000) {
+                            const middate = Math.round(maxDate/2 + minDate/2)
+                            newMax = new Date(middate + 1800000) // 30 mins
+                            newMin = new Date(middate - 1800000)
                             temp.updateOptions({
-                                dateWindow: [minDate, maxDate]
+                                dateWindow: [newMin, newMax]
                             });
                         }
                     },{% endif %}
@@ -259,11 +262,14 @@
                     strokeWidth: 2.5,
                     color: "#009C71",
                     {% if enforce_zoom_limit %}zoomCallback: function (minDate, maxDate, yRange) {
-                        var difference = maxDate - minDate;
-                        if ((difference / 1000 / 60) < 60) {
-                            maxDate = new Date(minDate + 3600000)
+                        if(typeof(maxDate)=='string') return
+                        var difference = maxDate - minDate
+                        if ( difference < 3600000) {
+                            const middate = Math.round((maxDate + minDate) / 2)
+                            newMax = new Date(middate + 1800000) // 30 mins
+                            newMin = new Date(middate - 1800000)
                             humi.updateOptions({
-                                dateWindow: [minDate, maxDate]
+                                dateWindow: [newMin, newMax]
                             });
                         }
                     },{% endif %}
@@ -322,11 +328,14 @@
                     labels: [ "Datetime", "Relay 1", "Relay 2" , "Relay 3" , "Relay 4" , "Relay 5" , "Relay 6"  ],
                     underlayCallback: defaultUnderlayCallback,
                     {% if enforce_zoom_limit %}zoomCallback: function (minDate, maxDate, yRange) {
-                        var difference = maxDate - minDate;
-                        if ((difference / 1000 / 60) < 60) {
-                            maxDate = new Date(minDate + 3600000)
+                        if(typeof(maxDate)=='string') return
+                        var difference = maxDate - minDate
+                        if ( difference < 3600000) {
+                            const middate = Math.round((maxDate + minDate) / 2)
+                            newMax = new Date(middate + 1800000) // 30 mins
+                            newMin = new Date(middate - 1800000)
                             relay.updateOptions({
-                                dateWindow: [minDate, maxDate]
+                                dateWindow: [newMin, newMax]
                             });
                         }
                     },{% endif %}
