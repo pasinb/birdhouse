@@ -45,8 +45,9 @@ INSTALLED_APPS = [
     'material',
     'material.admin',
     'django.contrib.admin',
-
+    'django_user_agents',
 ]
+
 
 CELERY_RESULT_BACKEND = 'django-db'
 
@@ -58,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'home.middleware.UserAgentMiddleware',
 ]
 
 ROOT_URLCONF = 'birdhouse.urls'

@@ -57,14 +57,14 @@ def send_request_to_all_address():
                     continue
                 relay = relay[0] + relay[1] + relay[3] + relay[5] + relay[6] + relay[7]
                 current_time = timezone.now().replace(second=0, microsecond=0)
-            except socket.timeout as e:
+            except socket.timeout:
                 create_failed_addr('Request timed out', address, floor)
                 continue
             except socket.error as e:
                 if e.errno == errno.ECONNREFUSED:
                     create_failed_addr('Connection refused', address, floor)
                 else:
-                    create_failed_addr(str(exception), address, floor)
+                    create_failed_addr(str(e), address, floor)
                 continue
             except Exception as exception:
                 create_failed_addr(str(exception), address, floor)
@@ -76,5 +76,6 @@ def send_request_to_all_address():
 
 
 @shared_task
-def cleanup():
-    pass  # TODO erase old data task
+def erase_old_data():
+    age_threshold = timezone.now() - timezone.timedelta(days=90)
+    Data.objects.filter(datetime__lt=age_threshold).delete()
