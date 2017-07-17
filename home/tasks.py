@@ -23,10 +23,10 @@ def create_failed_addr(err, address, floor):
 def send_request_to_all_address():
     # TODO parallel for multiple addr
     address_list = Address.objects.all()
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.settimeout(4)
     for address in address_list:
-        try:
+        try:   
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(4)
             sock.connect((address.url, address.port))
         except Exception as exception:
             for floor in range(1, address.floor_count + 1):
@@ -57,15 +57,6 @@ def send_request_to_all_address():
                     continue
                 relay = relay[0] + relay[1] + relay[3] + relay[5] + relay[6] + relay[7]
                 current_time = timezone.now().replace(second=0, microsecond=0)
-            except socket.timeout:
-                create_failed_addr('Request timed out', address, floor)
-                continue
-            except socket.error as e:
-                if e.errno == errno.ECONNREFUSED:
-                    create_failed_addr('Connection refused', address, floor)
-                else:
-                    create_failed_addr(str(e), address, floor)
-                continue
             except Exception as exception:
                 create_failed_addr(str(exception), address, floor)
                 continue
