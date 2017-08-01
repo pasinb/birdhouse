@@ -1,7 +1,7 @@
 from django.db import models
 import uuid
 from django.utils import timezone
-
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 # Create your models here.
 
@@ -10,7 +10,7 @@ class Address(models.Model):
     username = models.CharField(max_length=127)
     url = models.CharField(max_length=255, verbose_name="URL")
     port = models.IntegerField(default=1470, blank=True)
-    floor_count = models.IntegerField(default=1, blank=True)
+    floor_count = models.IntegerField(default=1, blank=True, validators=[MaxValueValidator(100),MinValueValidator(1)])
 
     class Meta:
         verbose_name_plural = 'List Addresses'

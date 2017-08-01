@@ -26,7 +26,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = constants['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['128.199.227.220', '188.166.216.172', '127.0.0.1', 'localhost']
 
@@ -45,8 +45,9 @@ INSTALLED_APPS = [
     'material',
     'material.admin',
     'django.contrib.admin',
-
+    'django_user_agents',
 ]
+
 
 CELERY_RESULT_BACKEND = 'django-db'
 
@@ -58,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'home.middleware.UserAgentMiddleware',
 ]
 
 ROOT_URLCONF = 'birdhouse.urls'
@@ -83,22 +85,15 @@ WSGI_APPLICATION = 'birdhouse.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': constants['BIRDHOUSE_DB_NAME'],
-#         'USER': constants['BIRDHOUSE_DB_USER'],
-#         'PASSWORD': constants['BIRDHOUSE_DB_PASSWORD'],
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#     },
-# }
-
 DATABASES = {
-   'default': {
-       'ENGINE': 'django.db.backends.sqlite3',
-       'NAME': 'mydatabase',
-   }
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': constants['BIRDHOUSE_DB_NAME'],
+        'USER': constants['BIRDHOUSE_DB_USER'],
+        'PASSWORD': constants['BIRDHOUSE_DB_PASSWORD'],
+        'HOST': 'localhost',
+        'PORT': '5432',
+    },
 }
 
 # Password validation
@@ -136,3 +131,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATIC_ROOT = "/var/www/birdhouse/static/"
