@@ -179,10 +179,7 @@
                 window.location.href = uri
             }
 
-            const nullList = [
-                {% for n in null_list %}[new Date("{{n.0.isoformat }}"),new Date("{{n.1.isoformat }}")],
-                {% endfor %}
-            ]
+            const nullList = [{% for n in null_list %}[new Date("{{n.0.isoformat }}"),new Date("{{n.1.isoformat }}")],{% endfor %}]
             // datetime, temp, humi, relay 1-6
             const dataList = [{% for d in data %}["{{ d.datetime.isoformat }}",{% if d.success %}{{ d.temp }}{% endif %},{% if d.success %}{{ d.humidity }}{% endif %},{% if d.relay.0 == "1" %}6{% endif %},{% if d.relay.1 == "1" %}5{% endif %},{% if d.relay.2 == "1" %}4{% endif %},{% if d.relay.3 == "1" %}3{% endif %},{% if d.relay.4 == "1" %}2{% endif %},{% if d.relay.5 == "1" %}1{% endif %}],{% endfor %}
             ]
@@ -226,18 +223,6 @@
                     axisLineWidth: 1.5,
                     strokeWidth: 2.5,
                     color: "#EC8F00",
-                    {% if enforce_zoom_limit %}zoomCallback: function (minDate, maxDate, yRange) {
-                        if(typeof(maxDate)=='string') return
-                        var difference = maxDate - minDate
-                        if ( difference < 3600000) {
-                            const middate = Math.round(maxDate/2 + minDate/2)
-                            newMax = new Date(middate + 1800000) // 30 mins
-                            newMin = new Date(middate - 1800000)
-                            temp.updateOptions({
-                                dateWindow: [newMin, newMax]
-                            });
-                        }
-                    },{% endif %}
                     {% if request.user_agent.is_mobile %}interactionModel: mobileInteractionModel,{% endif %}
                 }
             );
@@ -261,18 +246,6 @@
                     axisLineWidth: 1.5,
                     strokeWidth: 2.5,
                     color: "#009C71",
-                    {% if enforce_zoom_limit %}zoomCallback: function (minDate, maxDate, yRange) {
-                        if(typeof(maxDate)=='string') return
-                        var difference = maxDate - minDate
-                        if ( difference < 3600000) {
-                            const middate = Math.round((maxDate + minDate) / 2)
-                            newMax = new Date(middate + 1800000) // 30 mins
-                            newMin = new Date(middate - 1800000)
-                            humi.updateOptions({
-                                dateWindow: [newMin, newMax]
-                            });
-                        }
-                    },{% endif %}
                     {% if request.user_agent.is_mobile %}interactionModel: mobileInteractionModel,{% endif %}
                 }
             );
@@ -327,18 +300,6 @@
                     },
                     labels: [ "Datetime", "Relay 1", "Relay 2" , "Relay 3" , "Relay 4" , "Relay 5" , "Relay 6"  ],
                     underlayCallback: defaultUnderlayCallback,
-                    {% if enforce_zoom_limit %}zoomCallback: function (minDate, maxDate, yRange) {
-                        if(typeof(maxDate)=='string') return
-                        var difference = maxDate - minDate
-                        if ( difference < 3600000) {
-                            const middate = Math.round((maxDate + minDate) / 2)
-                            newMax = new Date(middate + 1800000) // 30 mins
-                            newMin = new Date(middate - 1800000)
-                            relay.updateOptions({
-                                dateWindow: [newMin, newMax]
-                            });
-                        }
-                    },{% endif %}
                     {% if request.user_agent.is_mobile %}interactionModel: mobileInteractionModel,{% endif %}
                 }
             );

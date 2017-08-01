@@ -52,12 +52,12 @@ def graph(request):
 
     for i in range(0, len(data)):
         if not data[i]['success']:
-            if data[i + 1] is not None and not data[i + 1]['success']:
+            if i + 1 < len(data) and not data[i + 1]['success']:
                 null_list.append([data[i]['datetime'], data[i + 1]['datetime']])
 
-    enforce_zoom_limit = True
-    if (len(data) < 13):
-        enforce_zoom_limit = False
+    # enforce_zoom_limit = True
+    # if (len(data) < 13):
+    #     enforce_zoom_limit = False
 
     return render(request, 'home/graph.html', {
         'data': data,
@@ -66,7 +66,7 @@ def graph(request):
         'floor': int(floor),
         'floor_count': range(1, address.floor_count + 1),
         'date_filter': date_filter,
-        'enforce_zoom_limit': enforce_zoom_limit,
+        #'enforce_zoom_limit': enforce_zoom_limit,
     })
 
 

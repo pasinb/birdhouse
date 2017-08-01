@@ -29,6 +29,7 @@ SECRET_KEY = constants['SECRET_KEY']
 DEBUG = False
 
 ALLOWED_HOSTS = ['128.199.227.220', '188.166.216.172', '127.0.0.1', 'localhost']
+DEFAULT_CHARSET = 'iso-8859-11'
 
 # Application definition
 

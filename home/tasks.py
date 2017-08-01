@@ -16,8 +16,8 @@ def prepend_zero(num):
 
 
 def create_failed_addr(err, address, floor):
-    Data.objects.create(err=err, success=False, address=address, floor=floor)
-
+    current_time = timezone.now().replace(second=0, microsecond=0)
+    Data.objects.create(datetime=current_time, err=err, success=False, address=address, floor=floor)
 
 @shared_task
 def send_request_to_all_address():

@@ -24,7 +24,7 @@ class Data(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     success = models.BooleanField(default=True)
     err = models.CharField(max_length=255, null=True, blank=True, default=None)
-    datetime = models.DateTimeField(default=timezone.now)
+    datetime = models.DateTimeField(default=timezone.now, db_index=True)
     floor = models.IntegerField(null=True)
     temp = models.FloatField(null=True, blank=True, default=None)
     humidity = models.FloatField(null=True, blank=True, default=None)
