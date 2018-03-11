@@ -13,8 +13,15 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import os
 import json
 
-with open('credentials.json') as data_file:
-    constants = json.load(data_file)
+# with open('credentials.json') as data_file:
+#     constants = json.load(data_file)
+
+constants = {
+    "BIRDHOUSE_DB_USER": "birdhouse",
+    "BIRDHOUSE_DB_PASSWORD": "birdhouse",
+    "BIRDHOUSE_DB_NAME": "birdhouse",
+    "SECRET_KEY": "83i2*!%)^0k&qa&g+y-_xgk9+j=4cszeabe3ii3w6)%uw@r=1@"
+}
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

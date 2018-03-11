@@ -45,7 +45,8 @@ def graph(request):
         data = data.filter(datetime__gte=timezone.now() - timezone.timedelta(weeks=1))
     elif date_filter == 'show-month':
         data = data.filter(datetime__gte=timezone.now() - timezone.timedelta(days=30))
-
+    elif date_filter == 'show-2month':
+        data = data.filter(datetime__gte=timezone.now() - timezone.timedelta(days=60))
     data = data.order_by('datetime')
 
     null_list = []
