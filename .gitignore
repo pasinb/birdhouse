@@ -18,3 +18,4 @@ yarn.lock
 .vscode/
 .env.sh
 credentials.json
+celerybeat.pid

@@ -13,12 +13,18 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import os
 import json
 
-with open('credentials.json') as data_file:
-    constants = json.load(data_file)
+# with open('credentials.json') as data_file:
+#     constants = json.load(data_file)
+
+constants = {
+    "BIRDHOUSE_DB_USER": "birdhouse",
+    "BIRDHOUSE_DB_PASSWORD": "birdhouse",
+    "BIRDHOUSE_DB_NAME": "birdhouse",
+    "SECRET_KEY": "83i2*!%)^0k&qa&g+y-_xgk9+j=4cszeabe3ii3w6)%uw@r=1@"
+}
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
@@ -27,22 +33,31 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = constants['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['128.199.227.220', '188.166.216.172', '127.0.0.1', 'localhost']
+DEFAULT_CHARSET = 'iso-8859-11'
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'home',
+    'django_celery_results',
+    'django_celery_beat',
+    'material.theme.lightblue',
+    'material',
+    'material.admin',
+    'django.contrib.admin',
+    'django_user_agents',
 ]
+
+
+CELERY_RESULT_BACKEND = 'django-db'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -52,6 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'home.middleware.UserAgentMiddleware',
 ]
 
 ROOT_URLCONF = 'birdhouse.urls'
@@ -59,7 +75,7 @@ ROOT_URLCONF = 'birdhouse.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -73,7 +89,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'birdhouse.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
@@ -107,13 +122,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Bangkok'
 
 USE_I18N = True
 
@@ -121,8 +135,9 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATIC_ROOT = "/var/www/birdhouse/static/"

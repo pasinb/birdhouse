@@ -1,0 +1,14 @@
+amqp==2.1.4
+billiard==3.5.0.2
+celery==4.0.2
+Django==1.11.2
+django-celery-beat==1.0.1
+django-celery-results==1.0.1
+django-material==1.0.0
+django-user-agents==0.3.0
+kombu==4.0.2
+psycopg2==2.7.1
+pytz==2017.2
+ua-parser==0.7.3
+user-agents==1.1.0
+vine==1.1.3
